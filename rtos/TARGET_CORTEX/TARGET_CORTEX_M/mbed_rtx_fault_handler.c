@@ -18,7 +18,7 @@
 #include "mbed_rtx.h"
 #include "mbed_rtx_fault_handler.h"
 #include "hal/serial_api.h"
-
+#include "hal/gpio_api.h"
 #ifndef MBED_FAULT_HANDLER_DISABLED
 //Global for populating the context in exception handler
 mbed_fault_context_t mbed_fault_context;
@@ -41,9 +41,22 @@ extern serial_t stdio_uart;
 //This runs in fault context and uses special functions(defined in mbed_rtx_fault_handler.c) to print the information without using C-lib support.
 __NO_RETURN void mbed_fault_handler (uint32_t fault_type, void *mbed_fault_context_in, void *osRtxInfoIn)
 {
+#ifdef DUT_AMS_ERROR
+    gpio_t ams_err; gpio_init_out(&ams_err, DUT_AMS_ERROR);
+    gpio_write(&ams_err, 1);
+
+    gpio_t n_instr; gpio_init_out(&n_instr, DUT_RELAY_N_AIR_INSTR);
+	gpio_write(&n_instr, 0);
+	gpio_t p_instr; gpio_init_out(&p_instr, DUT_RELAY_P_AIR_INSTR);
+	gpio_write(&p_instr, 0);
+	gpio_t pre_instr; gpio_init_out(&pre_instr, DUT_RELAY_PRECHARGE_INSTR);
+	gpio_write(&pre_instr, 0);
+	gpio_t dis_instr; gpio_init_out(&dis_instr, DUT_RELAY_DISCHARGE_INSTR);
+	gpio_write(&pre_instr, 0);
+#endif
     fault_print_init();
     fault_print_str("\n++ MbedOS Fault Handler ++\n\nFaultType: ",NULL);
-        
+
     switch( fault_type ) {
       case HARD_FAULT_EXCEPTION: 
         fault_print_str("HardFault",NULL); 
@@ -63,7 +76,7 @@ __NO_RETURN void mbed_fault_handler (uint32_t fault_type, void *mbed_fault_conte
     }
     fault_print_str("\n\nContext:",NULL);
     print_context_info();
-        
+
     fault_print_str("\n\nThread Info:\nCurrent:",NULL);
     print_thread(((osRtxInfo_t *)osRtxInfoIn)->thread.run.curr);
   
