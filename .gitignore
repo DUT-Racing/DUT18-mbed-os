@@ -86,3 +86,6 @@ tags
 
 # Visual Studio Code
 .vscode/
+
+# sw4stm32
+.settings/
