@@ -30,7 +30,22 @@ WEAK void mbed_die(void) {
 #if !defined (NRF51_H) && !defined(TARGET_EFM32)
     core_util_critical_section_enter();
 #endif
-    gpio_t led_err; gpio_init_out(&led_err, LED1);
+#ifdef DUT_AMS_ERROR
+    gpio_t ams_err; gpio_init_out(&ams_err, DUT_AMS_ERROR);
+    gpio_write(&ams_err, 1);
+
+    gpio_t n_instr; gpio_init_out(&n_instr, DUT_RELAY_N_AIR_INSTR);
+	gpio_write(&n_instr, 0);
+	gpio_t p_instr; gpio_init_out(&p_instr, DUT_RELAY_P_AIR_INSTR);
+	gpio_write(&p_instr, 0);
+	gpio_t pre_instr; gpio_init_out(&pre_instr, DUT_RELAY_PRECHARGE_INSTR);
+	gpio_write(&pre_instr, 0);
+	gpio_t dis_instr; gpio_init_out(&dis_instr, DUT_RELAY_DISCHARGE_INSTR);
+	gpio_write(&pre_instr, 0);
+#endif
+
+#ifdef DUT_LED_ERROR
+    gpio_t led_err; gpio_init_out(&led_err, DUT_LED_ERROR);
 
     while (1) {
         for (int i = 0; i < 4; ++i) {
@@ -47,6 +62,7 @@ WEAK void mbed_die(void) {
             wait_ms(400);
         }
     }
+#endif
 }
 
 void mbed_error_printf(const char* format, ...) {
