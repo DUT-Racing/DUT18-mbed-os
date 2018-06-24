@@ -21,6 +21,7 @@
 #include "platform/mbed_error.h"
 #include "platform/mbed_error_hist.h"
 #include "platform/mbed_interface.h"
+#include "hal/gpio_api.h"
 #ifdef MBED_CONF_RTOS_PRESENT  
 #include "rtx_os.h"
 #endif
@@ -57,6 +58,19 @@ static mbed_error_status_t handle_error(mbed_error_status_t error_status, unsign
 //Helper function to halt the system
 static void mbed_halt_system(void)
 {
+#ifdef DUT_AMS_ERROR
+    gpio_t ams_err; gpio_init_out(&ams_err, DUT_AMS_ERROR);
+    gpio_write(&ams_err, 1);
+
+    gpio_t n_instr; gpio_init_out(&n_instr, DUT_RELAY_N_AIR_INSTR);
+	gpio_write(&n_instr, 0);
+	gpio_t p_instr; gpio_init_out(&p_instr, DUT_RELAY_P_AIR_INSTR);
+	gpio_write(&p_instr, 0);
+	gpio_t pre_instr; gpio_init_out(&pre_instr, DUT_RELAY_PRECHARGE_INSTR);
+	gpio_write(&pre_instr, 0);
+	gpio_t dis_instr; gpio_init_out(&dis_instr, DUT_RELAY_DISCHARGE_INSTR);
+	gpio_write(&pre_instr, 0);
+#endif
     //If not in ISR context exit, otherwise spin on WFI
     if (core_util_is_isr_active() || !core_util_are_interrupts_enabled()) {
         for(;;) {
