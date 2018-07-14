@@ -88,3 +88,10 @@ tags
 .vscode/
 
 features/FEATURE_BLE/targets/TARGET_CORDIO/stack_backup/
+
+#atollic project files
+*.cproject_org
+*.project_org
+*.log
+*.code_review_properties
+.settings/
