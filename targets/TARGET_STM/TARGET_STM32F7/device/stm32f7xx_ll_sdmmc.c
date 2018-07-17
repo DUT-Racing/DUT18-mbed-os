@@ -374,6 +374,8 @@ HAL_StatusTypeDef SDMMC_SendCommand(SDMMC_TypeDef *SDMMCx, SDMMC_CmdInitTypeDef 
   assert_param(IS_SDMMC_WAIT(Command->WaitForInterrupt));
   assert_param(IS_SDMMC_CPSM(Command->CPSM));
 
+  HAL_SD_CmdWaitSetup(SDMMCx);
+
   /* Set the SDMMC Argument value */
   SDMMCx->ARG = Command->Argument;
 
@@ -384,7 +386,9 @@ HAL_StatusTypeDef SDMMC_SendCommand(SDMMC_TypeDef *SDMMCx, SDMMC_CmdInitTypeDef 
                        Command->CPSM);
   
   /* Write to SDMMC CMD register */
-  MODIFY_REG(SDMMCx->CMD, CMD_CLEAR_MASK, tmpreg); 
+  MODIFY_REG(SDMMCx->CMD, CMD_CLEAR_MASK, tmpreg);
+
+  HAL_SD_CmdWait(SDMMCx);
   
   return HAL_OK;  
 }

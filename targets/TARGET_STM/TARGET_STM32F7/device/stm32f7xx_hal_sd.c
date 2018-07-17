@@ -1107,15 +1107,15 @@ HAL_StatusTypeDef HAL_SD_ReadBlocks_DMA(SD_HandleTypeDef *hsd, uint8_t *pData, u
     SDMMC_ConfigData(hsd->Instance, &config);
 
     /* Set Block Size for Card */ 
-    errorstate = SDMMC_CmdBlockLength(hsd->Instance, BLOCKSIZE);
-    if(errorstate != HAL_SD_ERROR_NONE)
-    {
-      /* Clear all the static flags */
-      __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS); 
-      hsd->ErrorCode |= errorstate;
-      hsd->State = HAL_SD_STATE_READY;
-      return HAL_ERROR;
-    }
+//    errorstate = SDMMC_CmdBlockLength(hsd->Instance, BLOCKSIZE);
+//    if(errorstate != HAL_SD_ERROR_NONE)
+//    {
+//      /* Clear all the static flags */
+//      __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
+//      hsd->ErrorCode |= errorstate;
+//      hsd->State = HAL_SD_STATE_READY;
+//      return HAL_ERROR;
+//    }
         
     /* Read Blocks in DMA mode */
     if(NumberOfBlocks > 1U)
@@ -1206,15 +1206,15 @@ HAL_StatusTypeDef HAL_SD_WriteBlocks_DMA(SD_HandleTypeDef *hsd, uint8_t *pData, 
     }
     
     /* Set Block Size for Card */ 
-    errorstate = SDMMC_CmdBlockLength(hsd->Instance, BLOCKSIZE);
-    if(errorstate != HAL_SD_ERROR_NONE)
-    {
-      /* Clear all the static flags */
-      __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS); 
-      hsd->ErrorCode |= errorstate;
-      hsd->State = HAL_SD_STATE_READY;
-      return HAL_ERROR;
-    }
+//    errorstate = SDMMC_CmdBlockLength(hsd->Instance, BLOCKSIZE);
+//    if(errorstate != HAL_SD_ERROR_NONE)
+//    {
+//      /* Clear all the static flags */
+//      __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
+//      hsd->ErrorCode |= errorstate;
+//      hsd->State = HAL_SD_STATE_READY;
+//      return HAL_ERROR;
+//    }
     
     /* Write Blocks in Polling mode */
     if(NumberOfBlocks > 1U)
@@ -1377,10 +1377,18 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef *hsd)
   uint32_t errorstate = HAL_SD_ERROR_NONE;
   
   /* Check for SDMMC interrupt flags */
-  if(__HAL_SD_GET_FLAG(hsd, SDMMC_IT_DATAEND) != RESET)
+  if(__HAL_SD_GET_FLAG(hsd, SDMMC_IT_CMDREND) != RESET)
   {
-    __HAL_SD_CLEAR_FLAG(hsd, SDMMC_FLAG_DATAEND); 
-    
+	  __HAL_SD_CLEAR_FLAG(hsd, SDMMC_FLAG_CMDREND);
+
+	  __HAL_SD_DISABLE_IT(hsd, SDMMC_IT_CMDREND | SDMMC_IT_CTIMEOUT | SDMMC_IT_CCRCFAIL);
+
+	  HAL_SD_CmdCpltCallback(hsd);
+  }
+  else if(__HAL_SD_GET_FLAG(hsd, SDMMC_IT_DATAEND) != RESET)
+  {
+    __HAL_SD_CLEAR_FLAG(hsd, SDMMC_FLAG_DATAEND);
+
     __HAL_SD_DISABLE_IT(hsd, SDMMC_IT_DATAEND | SDMMC_IT_DCRCFAIL | SDMMC_IT_DTIMEOUT|\
                              SDMMC_IT_TXUNDERR| SDMMC_IT_RXOVERR);
     
@@ -1511,8 +1519,22 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef *hsd)
       HAL_SD_ErrorCallback(hsd);
     }
   }
-}
+  else if(__HAL_SD_GET_FLAG(hsd, SDMMC_IT_CCRCFAIL | SDMMC_IT_CTIMEOUT) != RESET)
+  {
+  	  if(__HAL_SD_GET_FLAG(hsd, SDMMC_IT_CCRCFAIL) != RESET)
+  	  {
+  		hsd->ErrorCode |= HAL_SD_ERROR_CMD_CRC_FAIL;
+  	  }
+  	  if(__HAL_SD_GET_FLAG(hsd, SDMMC_IT_DTIMEOUT) != RESET)
+  	  {
+  		hsd->ErrorCode |= HAL_SD_ERROR_CMD_RSP_TIMEOUT;
+  	  }
 
+  	  __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
+
+  	  __HAL_SD_DISABLE_IT(hsd, SDMMC_IT_CMDREND | SDMMC_IT_CTIMEOUT | SDMMC_IT_CCRCFAIL);
+    }
+}
 /**
   * @brief return the SD state
   * @param hsd Pointer to sd handle
@@ -1562,6 +1584,42 @@ __weak void HAL_SD_RxCpltCallback(SD_HandleTypeDef *hsd)
   /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_SD_RxCpltCallback can be implemented in the user file
    */
+}
+
+/**
+  * @brief Cmd completed callbacks
+  * @param hsd Pointer SD handle
+  * @retval None
+  * @author Gert Spek (controls@fsteamdelft.nl)
+  * Added on 20180717 to fix busy waits in SD Card driver
+  */
+__weak void HAL_SD_CmdCpltCallback(SD_HandleTypeDef *hsd)
+{
+  UNUSED(hsd);
+}
+
+/**
+  * @brief Setup wait command
+  * @param SDMMCx Pointer SD Instance
+  * @retval None
+  * @author Gert Spek (controls@fsteamdelft.nl)
+  * Added on 20180717 to fix busy waits in SD Card driver
+  */
+__weak void HAL_SD_CmdWaitSetup(SDMMC_TypeDef *SDMMCx)
+{
+  UNUSED(SDMMCx);
+}
+
+/**
+  * @brief Wait for SD Cmd to complete
+  * @param SDMMCx Pointer SD Instance
+  * @retval None
+  * @author Gert Spek (controls@fsteamdelft.nl)
+  * Added on 20180717 to fix busy waits in SD Card driver
+  */
+__weak void HAL_SD_CmdWait(SDMMC_TypeDef *SDMMCx)
+{
+  UNUSED(SDMMCx);
 }
 
 /**
