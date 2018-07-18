@@ -22,7 +22,6 @@
 #include "platform/mbed_error_hist.h"
 #include "platform/mbed_interface.h"
 #include "hal/gpio_api.h"
-#include "SEGGER_RTT.h"
 #ifdef MBED_CONF_RTOS_PRESENT  
 #include "rtx_os.h"
 #endif
