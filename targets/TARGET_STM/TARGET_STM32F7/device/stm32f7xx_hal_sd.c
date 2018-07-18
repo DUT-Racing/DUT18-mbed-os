@@ -1379,7 +1379,7 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef *hsd)
   /* Check for SDMMC interrupt flags */
   if(__HAL_SD_GET_FLAG(hsd, SDMMC_IT_CMDREND) != RESET)
   {
-	  __HAL_SD_CLEAR_FLAG(hsd, SDMMC_FLAG_CMDREND);
+//	  __HAL_SD_CLEAR_FLAG(hsd, SDMMC_FLAG_CMDREND);
 
 	  __HAL_SD_DISABLE_IT(hsd, SDMMC_IT_CMDREND | SDMMC_IT_CTIMEOUT | SDMMC_IT_CCRCFAIL);
 
@@ -1530,7 +1530,7 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef *hsd)
   		hsd->ErrorCode |= HAL_SD_ERROR_CMD_RSP_TIMEOUT;
   	  }
 
-  	  __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
+//  	  __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
 
   	  __HAL_SD_DISABLE_IT(hsd, SDMMC_IT_CMDREND | SDMMC_IT_CTIMEOUT | SDMMC_IT_CCRCFAIL);
     }
