@@ -20,6 +20,7 @@
 #include "platform/mbed_interface.h"
 #include "platform/mbed_critical.h"
 #include "hal/serial_api.h"
+#include "SEGGER_RTT.h"
 
 #if DEVICE_SERIAL
 extern int stdio_uart_inited;
@@ -68,7 +69,7 @@ WEAK void mbed_die(void) {
 void mbed_error_printf(const char* format, ...) {
     va_list arg;
     va_start(arg, format);
-    mbed_error_vfprintf(format, arg);
+    SEGGER_RTT_printf(0, format, arg);
     va_end(arg);
 }
 
