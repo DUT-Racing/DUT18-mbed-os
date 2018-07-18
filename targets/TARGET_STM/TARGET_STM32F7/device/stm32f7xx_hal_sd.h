@@ -587,7 +587,7 @@ void HAL_SD_ErrorCallback(SD_HandleTypeDef *hsd);
 void HAL_SD_AbortCallback(SD_HandleTypeDef *hsd);
 
 void HAL_SD_CmdWaitSetup(SDMMC_TypeDef *SDMMCx);
-void HAL_SD_CmdWait(SDMMC_TypeDef *SDMMCx);
+void HAL_SD_CmdWait(SDMMC_TypeDef *SDMMCx, uint32_t Timeout);
 
 /**
   * @}

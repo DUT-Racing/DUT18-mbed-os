@@ -1107,15 +1107,15 @@ HAL_StatusTypeDef HAL_SD_ReadBlocks_DMA(SD_HandleTypeDef *hsd, uint8_t *pData, u
     SDMMC_ConfigData(hsd->Instance, &config);
 
     /* Set Block Size for Card */ 
-//    errorstate = SDMMC_CmdBlockLength(hsd->Instance, BLOCKSIZE);
-//    if(errorstate != HAL_SD_ERROR_NONE)
-//    {
-//      /* Clear all the static flags */
-//      __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
-//      hsd->ErrorCode |= errorstate;
-//      hsd->State = HAL_SD_STATE_READY;
-//      return HAL_ERROR;
-//    }
+    errorstate = SDMMC_CmdBlockLength(hsd->Instance, BLOCKSIZE);
+    if(errorstate != HAL_SD_ERROR_NONE)
+    {
+      /* Clear all the static flags */
+      __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
+      hsd->ErrorCode |= errorstate;
+      hsd->State = HAL_SD_STATE_READY;
+      return HAL_ERROR;
+    }
         
     /* Read Blocks in DMA mode */
     if(NumberOfBlocks > 1U)
@@ -1206,15 +1206,15 @@ HAL_StatusTypeDef HAL_SD_WriteBlocks_DMA(SD_HandleTypeDef *hsd, uint8_t *pData, 
     }
     
     /* Set Block Size for Card */ 
-//    errorstate = SDMMC_CmdBlockLength(hsd->Instance, BLOCKSIZE);
-//    if(errorstate != HAL_SD_ERROR_NONE)
-//    {
-//      /* Clear all the static flags */
-//      __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
-//      hsd->ErrorCode |= errorstate;
-//      hsd->State = HAL_SD_STATE_READY;
-//      return HAL_ERROR;
-//    }
+    errorstate = SDMMC_CmdBlockLength(hsd->Instance, BLOCKSIZE);
+    if(errorstate != HAL_SD_ERROR_NONE)
+    {
+      /* Clear all the static flags */
+      __HAL_SD_CLEAR_FLAG(hsd, SDMMC_STATIC_FLAGS);
+      hsd->ErrorCode |= errorstate;
+      hsd->State = HAL_SD_STATE_READY;
+      return HAL_ERROR;
+    }
     
     /* Write Blocks in Polling mode */
     if(NumberOfBlocks > 1U)
@@ -1617,7 +1617,7 @@ __weak void HAL_SD_CmdWaitSetup(SDMMC_TypeDef *SDMMCx)
   * @author Gert Spek (controls@fsteamdelft.nl)
   * Added on 20180717 to fix busy waits in SD Card driver
   */
-__weak void HAL_SD_CmdWait(SDMMC_TypeDef *SDMMCx)
+__weak void HAL_SD_CmdWait(SDMMC_TypeDef *SDMMCx, uint32_t Timeout)
 {
   UNUSED(SDMMCx);
 }

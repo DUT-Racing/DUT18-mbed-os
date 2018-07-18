@@ -387,8 +387,6 @@ HAL_StatusTypeDef SDMMC_SendCommand(SDMMC_TypeDef *SDMMCx, SDMMC_CmdInitTypeDef 
   
   /* Write to SDMMC CMD register */
   MODIFY_REG(SDMMCx->CMD, CMD_CLEAR_MASK, tmpreg);
-
-  HAL_SD_CmdWait(SDMMCx);
   
   return HAL_OK;  
 }
@@ -1176,17 +1174,18 @@ static uint32_t SDMMC_GetCmdResp1(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint32_
 {
   uint32_t response_r1;
   
+  HAL_SD_CmdWait(SDMMCx, Timeout);
   /* 8 is the number of required instructions cycles for the below loop statement.
   The Timeout is expressed in ms */
   register uint32_t count = Timeout * (SystemCoreClock / 8 /1000);
-  
+
   do
   {
     if (count-- == 0)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
-    
+
   }while(!__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CCRCFAIL | SDMMC_FLAG_CMDREND | SDMMC_FLAG_CTIMEOUT));
   
   if(__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CTIMEOUT))
@@ -1303,19 +1302,20 @@ static uint32_t SDMMC_GetCmdResp1(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint32_
   */
 static uint32_t SDMMC_GetCmdResp2(SDMMC_TypeDef *SDMMCx)
 {
+  HAL_SD_CmdWait(SDMMCx, SDMMC_CMDTIMEOUT);
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDMMC_CMDTIMEOUT is expressed in ms */
   register uint32_t count = SDMMC_CMDTIMEOUT * (SystemCoreClock / 8 /1000);
-  
+
   do
   {
     if (count-- == 0)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
-    
+
   }while(!__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CCRCFAIL | SDMMC_FLAG_CMDREND | SDMMC_FLAG_CTIMEOUT));
-    
+
   if (__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CTIMEOUT))
   {
     __SDMMC_CLEAR_FLAG(SDMMCx, SDMMC_FLAG_CTIMEOUT);
@@ -1345,17 +1345,18 @@ static uint32_t SDMMC_GetCmdResp2(SDMMC_TypeDef *SDMMCx)
   */
 static uint32_t SDMMC_GetCmdResp3(SDMMC_TypeDef *SDMMCx)
 {
+  HAL_SD_CmdWait(SDMMCx, SDMMC_CMDTIMEOUT);
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDMMC_CMDTIMEOUT is expressed in ms */
   register uint32_t count = SDMMC_CMDTIMEOUT * (SystemCoreClock / 8 /1000);
-  
+
   do
   {
     if (count-- == 0)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
-    
+
   }while(!__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CCRCFAIL | SDMMC_FLAG_CMDREND | SDMMC_FLAG_CTIMEOUT));
   
   if(__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CTIMEOUT))
@@ -1386,17 +1387,18 @@ static uint32_t SDMMC_GetCmdResp6(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint16_
 {
   uint32_t response_r1;
 
+  HAL_SD_CmdWait(SDMMCx, SDMMC_CMDTIMEOUT);
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDMMC_CMDTIMEOUT is expressed in ms */
   register uint32_t count = SDMMC_CMDTIMEOUT * (SystemCoreClock / 8 /1000);
-  
+
   do
   {
     if (count-- == 0)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
-    
+
   }while(!__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CCRCFAIL | SDMMC_FLAG_CMDREND | SDMMC_FLAG_CTIMEOUT));
   
   if(__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CTIMEOUT))
@@ -1451,6 +1453,7 @@ static uint32_t SDMMC_GetCmdResp6(SDMMC_TypeDef *SDMMCx, uint8_t SD_CMD, uint16_
   */
 static uint32_t SDMMC_GetCmdResp7(SDMMC_TypeDef *SDMMCx)
 {
+  HAL_SD_CmdWait(SDMMCx, SDMMC_CMDTIMEOUT);
   /* 8 is the number of required instructions cycles for the below loop statement.
   The SDMMC_CMDTIMEOUT is expressed in ms */
   register uint32_t count = SDMMC_CMDTIMEOUT * (SystemCoreClock / 8 /1000);
@@ -1461,7 +1464,7 @@ static uint32_t SDMMC_GetCmdResp7(SDMMC_TypeDef *SDMMCx)
     {
       return SDMMC_ERROR_TIMEOUT;
     }
-    
+
   }while(!__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CCRCFAIL | SDMMC_FLAG_CMDREND | SDMMC_FLAG_CTIMEOUT));
 
   if(__SDMMC_GET_FLAG(SDMMCx, SDMMC_FLAG_CTIMEOUT))
