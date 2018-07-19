@@ -582,8 +582,13 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef *hsd);
 /* Callback in non blocking modes (DMA) */
 void HAL_SD_TxCpltCallback(SD_HandleTypeDef *hsd);
 void HAL_SD_RxCpltCallback(SD_HandleTypeDef *hsd);
+void HAL_SD_CmdCpltCallback(SD_HandleTypeDef *hsd);
 void HAL_SD_ErrorCallback(SD_HandleTypeDef *hsd);
 void HAL_SD_AbortCallback(SD_HandleTypeDef *hsd);
+
+void HAL_SD_CmdWaitSetup(SDMMC_TypeDef *SDMMCx);
+void HAL_SD_CmdWait(SDMMC_TypeDef *SDMMCx, uint32_t Timeout);
+
 /**
   * @}
   */

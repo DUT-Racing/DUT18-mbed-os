@@ -95,3 +95,4 @@ features/FEATURE_BLE/targets/TARGET_CORDIO/stack_backup/
 *.log
 *.code_review_properties
 .settings/
+/Debug/
