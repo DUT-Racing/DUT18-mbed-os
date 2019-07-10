@@ -31,8 +31,6 @@ WEAK MBED_NORETURN void mbed_die(void)
 #endif
 #ifdef DUT_LED_ERROR
     gpio_t led_err; gpio_init_out(&led_err, DUT_LED_ERROR);
-    gpio_t led_err;
-    gpio_init_out(&led_err, LED1);
 
     while (1) {
         for (int i = 0; i < 4; ++i) {
