@@ -22,12 +22,15 @@
 #include "platform/mbed_interface.h"
 #include "platform/mbed_retarget.h"
 #include "platform/mbed_critical.h"
+#include "SEGGER_RTT.h"
 
 WEAK MBED_NORETURN void mbed_die(void)
 {
 #if !defined (NRF51_H) && !defined(TARGET_EFM32)
     core_util_critical_section_enter();
 #endif
+#ifdef DUT_LED_ERROR
+    gpio_t led_err; gpio_init_out(&led_err, DUT_LED_ERROR);
     gpio_t led_err;
     gpio_init_out(&led_err, LED1);
 
@@ -46,13 +49,16 @@ WEAK MBED_NORETURN void mbed_die(void)
             wait_us(400000);
         }
     }
+#else
+    while (1);
+#endif
 }
 
 void mbed_error_printf(const char *format, ...)
 {
     va_list arg;
     va_start(arg, format);
-    mbed_error_vprintf(format, arg);
+    SEGGER_RTT_printf(format, arg);
     va_end(arg);
 }
 
