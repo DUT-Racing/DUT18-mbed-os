@@ -24,7 +24,7 @@
  */
 
 #include "rtx_lib.h"
-
+#include <SEGGER_RTT.h>
 
 //  OS Runtime Object Memory Usage
 #if ((defined(OS_OBJ_MEM_USAGE) && (OS_OBJ_MEM_USAGE != 0)))
@@ -522,6 +522,7 @@ __WEAK void osRtxThreadStackCheck (void) {
     //lint -e{9079} -e{9087} "cast between pointers to different object types"
     if ((thread->sp <= (uint32_t)thread->stack_mem) ||
         (*((uint32_t *)thread->stack_mem) != osRtxStackMagicWord)) {
+    	RTTOUT("Stackoverflow in process %s\n", thread->name);
       (void)osRtxErrorNotify(osRtxErrorStackUnderflow, thread);
     }
   }

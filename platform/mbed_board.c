@@ -58,7 +58,7 @@ void mbed_error_printf(const char *format, ...)
 {
     va_list arg;
     va_start(arg, format);
-    SEGGER_RTT_printf(format, arg);
+    SEGGER_RTT_printf(0, format, arg);
     va_end(arg);
 }
 
